@@ -10,7 +10,7 @@ import ru.netology.web.page.LoginPage;
 import static com.codeborne.selenide.Selenide.open;
 import static org.junit.jupiter.api.Assertions.*;
 
-class MoneyTransferTest {
+class AuthorisationTest {
 
     @AfterAll
     public static void CleanAllTables() {
