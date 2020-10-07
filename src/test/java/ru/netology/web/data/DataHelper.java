@@ -1,21 +1,16 @@
 package ru.netology.web.data;
 
-import com.github.javafaker.Faker;
-import lombok.Value;
-import lombok.val;
+import lombok.*;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Locale;
 
 public class DataHelper {
   private static String jdbcUrl = "jdbc:mysql://localhost:3306/app";
   private static String user = "app";
   private static String password = "pass";
-
-  private DataHelper() {}
 
   @Value
   public static class AuthInfo {
@@ -27,25 +22,37 @@ public class DataHelper {
     return new AuthInfo("vasya", "qwerty123");
   }
 
-  public static AuthInfo getInvalidLogin() {
-    Faker faker = new Faker(new Locale("EN"));
-    String invalidLogin = faker.name().username();
-    return new AuthInfo(invalidLogin, "qwerty123");
-  }
-
-  public static AuthInfo getInvalidPassword() {
-    Faker faker = new Faker(new Locale("EN"));
-    String invalidPassword = faker.internet().password(8,10,false,false,true);
-    return new AuthInfo("vasya", invalidPassword);
-  }
-
   @Value
   public static class VerificationCode {
     private String code;
   }
 
+  @Value
+  public static class VerificationInfo {
+    private String login;
+    private String code;
+  }
+
+  public static VerificationInfo getVerificationInfo() {
+    return new VerificationInfo(getAuthInfo().login, getLastVerificationCode());
+  }
+
+  @Data
+  public final class Card {
+    private String id;
+    private String number;
+    private int balance;
+  }
+
+  @Data
+  public static class TransactionInfo {
+    private String from;
+    private String to;
+    private int amount;
+  }
+
   public static String getLastVerificationCode() {
-    val queryAuthCodeInSQL = "SELECT code FROM auth_codes WHERE created >= DATE_SUB(NOW() , INTERVAL 5 SECOND);";
+    val queryAuthCodeInSQL = "SELECT code FROM auth_codes WHERE created >= DATE_SUB(NOW() , INTERVAL 1 SECOND);";
     val runner = new QueryRunner();
     try (
             val conn = DriverManager.getConnection(jdbcUrl, user, password)
@@ -58,23 +65,14 @@ public class DataHelper {
     return null;
   }
 
-  public static String getInvalidVerificationCode() {
-    return String.valueOf(1234);
-  }
-
-  public static int getMultiplicityInvalidPasswordToLogin() {
-    return 3;
-  }
-
-  public static String getUserStatus() {
-    val login = getInvalidPassword().login;
-    val queryAuthCodeInSQL = "SELECT status FROM users WHERE login = '" + login + "';";
+  public static String getFullCardNumberFromCardId(String cardId) {
+    val queryAuthCodeInSQL = "SELECT number FROM cards WHERE id = '" + cardId + "';";
     val runner = new QueryRunner();
     try (
             val conn = DriverManager.getConnection(jdbcUrl, user, password)
     ) {
-      val userStatus = runner.query(conn, queryAuthCodeInSQL, new ScalarHandler<>());
-      return (String) userStatus;
+      val cardNumber = runner.query(conn, queryAuthCodeInSQL, new ScalarHandler<>());
+      return (String) cardNumber;
     } catch (SQLException throwables) {
       throwables.printStackTrace();
     }
