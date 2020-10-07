@@ -76,4 +76,5 @@ class TransactionTest {
         assertEquals(startBalanceOnFirstCard, RestRequest.cards[0].getBalance());
         assertEquals(startBalanceOnSecondCard, RestRequest.cards[1].getBalance());
     }
+
 }

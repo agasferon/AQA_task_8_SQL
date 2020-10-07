@@ -45,7 +45,6 @@ public class RestRequest {
                 .statusCode(200)
                 .extract()
                 .path("token");
-        System.out.println(token);
     }
 
     public static void getCards(String token) {
@@ -61,9 +60,6 @@ public class RestRequest {
                 .as(DataHelper.Card[].class);
         for (int i=0; i < cards.length; i++) {
             cards[i].setNumber(DataHelper.getFullCardNumberFromCardId(cards[i].getId()));
-        }
-        for (DataHelper.Card card : cards) {
-            System.out.println(card.getId() + " " + card.getNumber() + " " + card.getBalance());
         }
     }
 
