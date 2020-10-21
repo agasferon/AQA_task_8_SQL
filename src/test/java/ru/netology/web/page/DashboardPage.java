@@ -9,7 +9,7 @@ public class DashboardPage {
 
   private SelenideElement heading = $("[data-test-id=dashboard]");
 
-  public void DashboardPage() {
+  public void dashboardPageVisible() {
     heading.shouldBe(visible);
   }
 

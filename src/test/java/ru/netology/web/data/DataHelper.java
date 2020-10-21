@@ -62,25 +62,6 @@ public class DataHelper {
     return String.valueOf(1234);
   }
 
-  public static int getMultiplicityInvalidPasswordToLogin() {
-    return 3;
-  }
-
-  public static String getUserStatus() {
-    val login = getInvalidPassword().login;
-    val queryAuthCodeInSQL = "SELECT status FROM users WHERE login = '" + login + "';";
-    val runner = new QueryRunner();
-    try (
-            val conn = DriverManager.getConnection(jdbcUrl, user, password)
-    ) {
-      val userStatus = runner.query(conn, queryAuthCodeInSQL, new ScalarHandler<>());
-      return (String) userStatus;
-    } catch (SQLException throwables) {
-      throwables.printStackTrace();
-    }
-    return null;
-  }
-
   public static void cleanDataBase() {
     val runner = new QueryRunner();
     val deleteUsers = "DELETE FROM users";

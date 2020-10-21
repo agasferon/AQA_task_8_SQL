@@ -2,15 +2,19 @@ package ru.netology.web.test;
 
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.netology.web.data.DataHelper;
-import ru.netology.web.page.DashboardPage;
 import ru.netology.web.page.LoginPage;
 
 import static com.codeborne.selenide.Selenide.open;
-import static org.junit.jupiter.api.Assertions.*;
 
 class AuthorisationTest {
+
+    @BeforeEach
+    public void openPage() {
+        open("http://localhost:9999");
+    }
 
     @AfterAll
     public static void CleanAllTables() {
@@ -19,18 +23,16 @@ class AuthorisationTest {
 
     @Test
     public void shouldLoginToPersonalAccount() {
-        open("http://localhost:9999");
         val loginPage = new LoginPage();
         val authInfo = DataHelper.getAuthInfo();
         val verificationPage = loginPage.validLogin(authInfo);
         val verificationCode = DataHelper.getLastVerificationCode();
         val dashboardPage = verificationPage.validVerify(verificationCode);
-        dashboardPage.DashboardPage();
+        dashboardPage.dashboardPageVisible();
     }
 
     @Test
     public void shouldNotEntryIfInvalidLogin() {
-        open("http://localhost:9999");
         val loginPage = new LoginPage();
         val authInfo = DataHelper.getInvalidLogin();
         loginPage.invalidLogin(authInfo);
@@ -38,7 +40,6 @@ class AuthorisationTest {
 
     @Test
     public void shouldNotLoginIfInvalidPassword() {
-        open("http://localhost:9999");
         val loginPage = new LoginPage();
         val authInfo = DataHelper.getInvalidPassword();
         loginPage.invalidLogin(authInfo);
@@ -46,7 +47,6 @@ class AuthorisationTest {
 
     @Test
     public void shouldNotLoginIfInvalidVerificationCode() {
-        open("http://localhost:9999");
         val loginPage = new LoginPage();
         val authInfo = DataHelper.getAuthInfo();
         val verificationPage = loginPage.validLogin(authInfo);
@@ -56,10 +56,13 @@ class AuthorisationTest {
 
     @Test
     public void shouldLockingUserIfInvalidPasswordSeveralTime() {
-        open("http://localhost:9999");
         val loginPage = new LoginPage();
         val authInfo = DataHelper.getInvalidPassword();
-        loginPage.multipleInvalidLogin(authInfo);
-        assertNotEquals("active", DataHelper.getUserStatus());
+        loginPage.invalidLogin(authInfo);
+        loginPage.cleanLoginPageFields();
+        loginPage.invalidLogin(authInfo);
+        loginPage.cleanLoginPageFields();
+        loginPage.invalidLogin(authInfo);
+        loginPage.userLockedMessages();
     }
 }
