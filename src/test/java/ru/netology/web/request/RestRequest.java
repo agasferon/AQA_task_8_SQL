@@ -13,8 +13,8 @@ import static io.restassured.RestAssured.given;
 @AllArgsConstructor
 @Data
 public class RestRequest {
-    public static String token;
-    public static DataHelper.Card[] cards;
+    private static String token;
+    private static DataHelper.Card[] cards;
 
     private static final RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
@@ -34,7 +34,7 @@ public class RestRequest {
                 .statusCode(200);
     }
 
-    public static void passVerification(DataHelper.VerificationInfo verificationInfo) {
+    public static String passVerification(DataHelper.VerificationInfo verificationInfo) {
         token =
         given()
                 .spec(requestSpec)
@@ -45,9 +45,10 @@ public class RestRequest {
                 .statusCode(200)
                 .extract()
                 .path("token");
+        return token;
     }
 
-    public static void getCards(String token) {
+    public static DataHelper.Card[] getCards(String token) {
         cards =
         given()
                 .spec(requestSpec)
@@ -61,6 +62,7 @@ public class RestRequest {
         for (int i=0; i < cards.length; i++) {
             cards[i].setNumber(DataHelper.getFullCardNumberFromCardId(cards[i].getId()));
         }
+        return cards;
     }
 
     public static void setTransaction(DataHelper.TransactionInfo transactionInfo) {
